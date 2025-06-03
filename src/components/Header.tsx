@@ -2,9 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Icon from "@/components/ui/icon";
+import AuthDialog from "@/components/AuthDialog";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   return (
     <header className="bg-white shadow-sm border-b">
@@ -60,7 +64,23 @@ const Header = () => {
               <Icon name="ShoppingCart" className="h-5 w-5" />
             </Button>
 
-            <Button size="sm">Войти</Button>
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="sm" asChild>
+                  <a href="/profile">
+                    <Icon name="User" className="h-5 w-5 mr-1" />
+                    {user.name}
+                  </a>
+                </Button>
+                <Button variant="outline" size="sm" onClick={logout}>
+                  Выйти
+                </Button>
+              </div>
+            ) : (
+              <Button size="sm" onClick={() => setIsAuthDialogOpen(true)}>
+                Войти
+              </Button>
+            )}
 
             {/* Mobile menu button */}
             <Button
@@ -103,6 +123,8 @@ const Header = () => {
           </div>
         )}
       </div>
+
+      <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
     </header>
   );
 };
